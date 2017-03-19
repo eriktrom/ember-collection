@@ -18,8 +18,8 @@ export default Ember.Component.extend({
   layout: layout,
 
   init() {
-    // State pulled from attrs is prefixed with an underscore
-    // so that there's no chance of shadowing the attrs proxy.
+    this._super(...arguments);
+
     this._buffer = undefined;
     this._cellLayout = undefined;
     this._rawItems = undefined;
@@ -45,16 +45,6 @@ export default Ember.Component.extend({
     this._clientWidth = this.getAttr('estimated-width') | 0;
     this._clientHeight = this.getAttr('estimated-height') | 0;
     this._scrollChange = this.getAttr('scroll-change');
-
-    // TODO: Super calls should always be at the top of the constructor.
-    // I had to move the super call after the properties were defined to
-    // work around what I believe is a bug in the attrs proxy. The problem
-    // seems to arise when you:
-    //
-    //   1. Call this._super() immediately.
-    //   2. Set a property on `this` that is both not in the
-    //      initial attrs hash and not on the prototype.
-    this._super();
   },
 
   _needsRevalidate(){
