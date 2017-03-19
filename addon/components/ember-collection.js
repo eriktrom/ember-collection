@@ -37,6 +37,15 @@ export default Ember.Component.extend({
     this._cells = Ember.A();
     this._cellMap = Object.create(null);
 
+    // from didInitAttrs
+    let buffer = this.getAttr('buffer'); // getIntAttr('buffer', 5)
+    this._buffer = (typeof buffer === 'number') ? buffer : 5;
+    this._scrollLeft = this.getAttr('scroll-left') | 0;
+    this._scrollTop = this.getAttr('scroll-top') | 0;
+    this._clientWidth = this.getAttr('estimated-width') | 0;
+    this._clientHeight = this.getAttr('estimated-height') | 0;
+    this._scrollChange = this.getAttr('scroll-change');
+
     // TODO: Super calls should always be at the top of the constructor.
     // I had to move the super call after the properties were defined to
     // work around what I believe is a bug in the attrs proxy. The problem
@@ -48,16 +57,6 @@ export default Ember.Component.extend({
     this._super();
   },
 
-  didInitAttrs() {
-    let buffer = this.getAttr('buffer'); // getIntAttr('buffer', 5)
-    this._buffer = (typeof buffer === 'number') ? buffer : 5;
-    this._scrollLeft = this.getAttr('scroll-left') | 0;
-    this._scrollTop = this.getAttr('scroll-top') | 0;
-    this._clientWidth = this.getAttr('estimated-width') | 0;
-    this._clientHeight = this.getAttr('estimated-height') | 0;
-    this._scrollChange = this.getAttr('scroll-change');
-  },
-
   _needsRevalidate(){
     if (this._isGlimmer2()) {
       this.rerender();
@@ -67,10 +66,6 @@ export default Ember.Component.extend({
   },
 
   didReceiveAttrs() {
-    // Work around emberjs/ember.js#11992. Affects <=1.13.8 and <=2.0.0.
-    // This will likely be patched in 1.13.9 and 2.0.1.
-    this._super();
-
     this.updateItems();
     this.updateScrollPosition();
   },
