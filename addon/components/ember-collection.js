@@ -1,7 +1,6 @@
 import Ember from 'ember';
 import layout from './ember-collection/template';
 import identity from '../utils/identity';
-import needsRevalidate from '../utils/needs-revalidate';
 const { get, set } = Ember;
 
 class Cell {
@@ -39,7 +38,7 @@ export default Ember.Component.extend({
 
     // from didInitAttrs
     let buffer = this.getAttr('buffer'); // getIntAttr('buffer', 5)
-    this._buffer = (typeof buffer === 'number') ? buffer : 5;
+    this._buffer = (typeof buffer === 'number') ? buffer : 0;
     this._scrollLeft = this.getAttr('scroll-left') | 0;
     this._scrollTop = this.getAttr('scroll-top') | 0;
     this._clientWidth = this.getAttr('estimated-width') | 0;
@@ -48,11 +47,8 @@ export default Ember.Component.extend({
   },
 
   _needsRevalidate(){
-    if (this._isGlimmer2()) {
-      this.rerender();
-    } else {
-      needsRevalidate(this);
-    }
+    if (this._renderNode) { throw Error('This addon requires glimmer2'); }
+    this.rerender();
   },
 
   didReceiveAttrs() {
@@ -188,10 +184,6 @@ export default Ember.Component.extend({
       this._cells.pushObject(cell);
     }
     this._cellMap = cellMap;
-  },
-
-  _isGlimmer2() {
-    return !this._renderNode;
   },
 
   actions: {
